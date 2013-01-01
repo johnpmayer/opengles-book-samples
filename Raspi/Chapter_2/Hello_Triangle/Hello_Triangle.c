@@ -154,24 +154,34 @@ int Init ( ESContext *esContext )
 void Draw ( ESContext *esContext )
 {
    UserData *userData = esContext->userData;
-   GLfloat vVertices[] = {  0.0f,  0.5f, 0.0f, 
-                           -0.5f, -0.5f, 0.0f,
-                            0.5f, -0.5f, 0.0f };
-      
-   // Set the viewport
-   glViewport ( 0, 0, esContext->width, esContext->height );
+   GLfloat vVertices[] = {  0.0f,  1.0f, 0.0f, 
+                           -1.0f, -1.0f, 0.0f,
+                            1.0f, -1.0f, 0.0f };
    
-   // Clear the color buffer
-   glClear ( GL_COLOR_BUFFER_BIT );
+   int i;
+   for (i = 0; i < 2; i += 1) {
+      
+      int h = esContext->height;
+      int wHalf = esContext->width / 2;      
 
-   // Use the program object
-   glUseProgram ( userData->programObject );
+      // Set the viewport
+      if ( i == 0 ) {
+         glViewport ( 0,   0, wHalf, h );
+         glClear ( GL_COLOR_BUFFER_BIT );
+      } else {
+         glViewport ( wHalf, 0, wHalf, h );
+      }
+      
+      // Use the program object
+      glUseProgram ( userData->programObject );
+      
+      // Load the vertex data
+      glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
+      glEnableVertexAttribArray ( 0 );
 
-   // Load the vertex data
-   glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
-   glEnableVertexAttribArray ( 0 );
+      glDrawArrays ( GL_TRIANGLES, 0, 3 );
+   }
 
-   glDrawArrays ( GL_TRIANGLES, 0, 3 );
 }
 
 int main ( int argc, char *argv[] )
@@ -182,7 +192,7 @@ int main ( int argc, char *argv[] )
    esInitContext ( &esContext );
    esContext.userData = &userData;
 
-   esCreateWindow ( &esContext, "Hello Triangle", 428, 240, ES_WINDOW_RGB );
+   esCreateWindow ( &esContext, "Hello Triangle", 712, 480, ES_WINDOW_RGB );
 
    if ( !Init ( &esContext ) )
       return 0;
